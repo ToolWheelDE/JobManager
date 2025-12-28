@@ -9,12 +9,12 @@
   <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Abstraction/test/">
     <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Abstraction/test/ToolWheel.Extensions.JobManager.Abstraction.Test.csproj" />
   </Folder>
-  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Resilience/" />
-  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Resilience/src/">
-    <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Resilience/src/ToolWheel.Extensions.JobManager.Resilience.csproj" />
+  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/" />
+  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/src/">
+    <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/src/ToolWheel.Extensions.JobManager.Scheduler.csproj" />
   </Folder>
-  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Resilience/test/">
-    <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Resilience/test/ToolWheel.Extensions.JobManager.Resilience.Test.csproj" />
+  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/test/">
+    <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/test/ToolWheel.Extensions.JobManager.Scheduler.Test/ToolWheel.Extensions.JobManager.Scheduler.Test.csproj" />
   </Folder>
   <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager/" />
   <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager/src/">
