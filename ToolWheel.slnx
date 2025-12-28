@@ -9,6 +9,13 @@
   <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Abstraction/test/">
     <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Abstraction/test/ToolWheel.Extensions.JobManager.Abstraction.Test.csproj" />
   </Folder>
+  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/" />
+  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/src/">
+    <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/src/ToolWheel.Extensions.JobManager.Scheduler.csproj" />
+  </Folder>
+  <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/test/">
+    <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/test/ToolWheel.Extensions.JobManager.Scheduler.Test/ToolWheel.Extensions.JobManager.Scheduler.Test.csproj" />
+  </Folder>
   <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager/" />
   <Folder Name="/Source/Extensions/JobManager/ToolWheel.Extensions.JobManager/src/">
     <Project Path="Source/Extensions/JobManager/ToolWheel.Extensions.JobManager/src/ToolWheel.Extensions.JobManager.csproj" />
