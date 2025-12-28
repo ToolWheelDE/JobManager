@@ -5,9 +5,9 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<IsPackable>false</IsPackable>
-		<PackageId>ToolWheel.Extenions.JobManager</PackageId>
+		<PackageId>ToolWheel.Extenions.JobManager.Resilience</PackageId>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\ToolWheel.Extensions.JobManager.Abstraction\src\ToolWheel.Extensions.JobManager.Abstraction.csproj" />
+		<ProjectReference Include="..\..\ToolWheel.Extensions.JobManager\src\ToolWheel.Extensions.JobManager.csproj" />
 	</ItemGroup>
 </Project>
