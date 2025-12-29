@@ -36,6 +36,17 @@ public static class JobDescriptorExtensions
             return defaultValue!;
         }
 
-        return (T)Convert.ChangeType(value, typeof(T));
+        if (value is null)
+        {
+            return defaultValue!;
+        }
+
+        var converted = Convert.ChangeType(value, typeof(T));
+        if (converted is null)
+        {
+            return defaultValue!;
+        }
+
+        return (T)converted;
     }
 }

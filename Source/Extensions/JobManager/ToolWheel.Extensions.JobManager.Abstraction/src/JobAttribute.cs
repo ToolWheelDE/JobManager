@@ -2,7 +2,7 @@
 
 namespace ToolWheel;
 
-[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
 public sealed class JobAttribute : Attribute
 {
     public JobAttribute(string jobId)

@@ -29,20 +29,16 @@ public static class JobDescriptorCollectionExtensions
         return collection;
     }
 
-    public static void AddMethod<T>(this JobDescriptionCollection collection, Expression<Func<T, Delegate>> expr)
-    {
-        var method = ResolveMethodCall(expr.Body) ?? throw new ArgumentException("Expression does not represent a method call.");
-
-        collection.AddMethod(method);
-    }
-
     public static void AddMethod<T>(this JobDescriptionCollection collection, Expression<Func<T, Delegate>> expr, Action<JobDescriptionBuilder>? configure = null)
     {
         var target = ResolveMethodCall(expr.Body) ?? throw new ArgumentException("Expression does not represent a method call.");
-        var builder = new JobDescriptionBuilder(target);
-        var jobDescription = JobDescriptionConfigurationUtility.CreateJobDescription(target, configure, m => JobIdResolver(collection, m));
 
-        collection.Add(jobDescription);
+        AddMethod(collection, target, configure);
+    }
+
+    public static void AddMethod<T>(this JobDescriptionCollection collection, Delegate method, Action<JobDescriptionBuilder>? configure = null)
+    {
+        AddMethod(collection, method.Method, configure);
     }
 
     public static void AddMethod(this JobDescriptionCollection collection, MethodInfo target, Action<JobDescriptionBuilder>? configure = null)
