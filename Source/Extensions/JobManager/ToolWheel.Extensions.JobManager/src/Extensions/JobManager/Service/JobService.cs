@@ -36,15 +36,12 @@ public class JobService : IJobService
             return null;
         }
 
-        var configuration = _configuration.GetSection("Jobs:" + jobDescription.JobId);
-        JobDescriptionUtility.ApplyConfiguration(jobDescription, configuration);
-
         var job = new Job(jobDescription.JobId)
         {
-            Method = jobDescription.Method,
+            Method = jobDescription.Target,
             Name = jobDescription.JobName,
             IsScopedInstance = jobDescription.IsScoped,
-            Configuration = jobDescription.Configuration ?? configuration,
+            Configuration = jobDescription.Configuration ,
             MaxExecutedTasks = jobDescription.MaxExecutedJobs,
             Enabled = jobDescription.Enabled,
             JobDependencyIds = jobDescription?.JobDependencyIds?.ToList() ?? new List<string>()

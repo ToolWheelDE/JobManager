@@ -3,83 +3,105 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using ToolWheel;
 
 namespace ToolWheel.Extensions.JobManager.Configuration;
+
 public class JobDescriptionUtility
 {
     public static JobDescription CreateJobDescription(MethodInfo method, Func<MethodInfo, string> jobIdResolver, Action<JobDescriptionBuilder>? configure = null)
     {
-        var jobDescription = new JobDescription(method)
-        {
-            JobId = jobIdResolver(method) 
-        };
+        var builder = new JobDescriptionBuilder(method, jobIdResolver(method));
 
-        ApplyJobDependencyAttributes(jobDescription);
-        configure?.Invoke(new JobDescriptionBuilder(jobDescription));
+        ApplyJobDependencyAttributes(builder, method);
 
-        return jobDescription;
+        configure?.Invoke(builder);
+
+        return builder.Build();
     }
 
-    public static IEnumerable<JobDescription> CreateJobDescriptions(MethodInfo method, Func<JobDescriptionIdInfo, string> jobIdResolver)
+    public static IEnumerable<JobDescription> CreateJobDescriptions(MethodInfo target, Func<JobDescriptionIdInfo, string> jobIdResolver)
     {
-        var jobAttributes = method.GetCustomAttributes<JobAttribute>();
+        var jobAttributes = target.GetCustomAttributes<JobAttribute>();
 
         if (jobAttributes.Any())
         {
             foreach (var jobAttribute in jobAttributes)
             {
-                var info = new JobDescriptionIdInfo(method, jobAttribute);
-                var jobDescription = new JobDescription(method)
-                {
-                    JobId = jobIdResolver(info)
-                };
+                var info = new JobDescriptionIdInfo(target, jobAttribute);
+                var builder = new JobDescriptionBuilder(target, jobIdResolver(info)); ;
 
-                ApplyJobAttribute(jobDescription, jobAttribute);
-                ApplyJobDependencyAttributes(jobDescription);
+                ApplyJobAttribute(builder, jobAttribute);
+                ApplyJobDependencyAttributes(builder, target);
 
-                yield return jobDescription;
+                yield return builder.Build();
             }
         }
         else
         {
-            var info = new JobDescriptionIdInfo(method, null);
-            var jobDescription = new JobDescription(method)
-            {
-                JobId = jobIdResolver(info)
-            };
+            var info = new JobDescriptionIdInfo(target, null);
+            var builder = new JobDescriptionBuilder(target, jobIdResolver(info));
 
-            ApplyJobDependencyAttributes(jobDescription);
+            ApplyJobDependencyAttributes(builder, target);
 
-            yield return jobDescription;
+            yield return builder.Build();
         }
     }
 
-    private static void ApplyJobAttribute(JobDescription jobDescription, JobAttribute jobAttribute)
+    private static void ApplyJobAttribute(JobDescriptionBuilder builder, JobAttribute jobAttribute)
     {
-        jobDescription.JobId = jobAttribute.JobId ?? jobDescription.JobId;
-        jobDescription.JobName = jobAttribute.Name ?? jobDescription.JobName;
-        jobDescription.IsScoped = jobAttribute.IsScoped;
-        jobDescription.MaxExecutedJobs = jobAttribute.MaxExecutedTasks;
+        if (jobAttribute is null)
+        {
+            throw new ArgumentNullException(nameof(jobAttribute));
+        }
+
+        if (jobAttribute.JobId is not null)
+        {
+            builder.Id(jobAttribute.JobId);
+        }
+
+        if (jobAttribute.Name is not null)
+        {
+            builder.Name(jobAttribute.Name);
+        }
+
+        if (jobAttribute.IsScoped is not null && jobAttribute.IsScoped == true)
+        {
+            builder.IsScoped();
+        }
+
+        if (jobAttribute.MaxExecutedTasks is not null)
+        {
+            builder.MaxExecutedTasks(jobAttribute.MaxExecutedTasks.Value);
+        }
     }
 
-    private static void ApplyJobDependencyAttributes(JobDescription jobDescription)
+    private static void ApplyJobDependencyAttributes(JobDescriptionBuilder jobDescription, MethodInfo target)
     {
-        jobDescription.JobDependencyIds = jobDescription.Method.GetCustomAttributes<WaitForJobAttribute>().Select(attr => attr.JobId);
+        jobDescription.AddJobDependencyId(target.GetCustomAttributes<WaitForJobAttribute>().Select(attr => attr.JobId));
     }
 
-    public static void ApplyConfiguration(IJobDescription jobDescription, IConfiguration? configuration)
+    public static void ApplyConfiguration(JobDescriptionBuilder builder, IConfiguration? configuration)
     {
-        jobDescription.Configuration = configuration;
-
         if (configuration is not null)
         {
-            jobDescription.JobName = configuration.GetValue<string?>(nameof(JobDescription.JobName)) ?? jobDescription.JobName;
-            jobDescription.Enabled = configuration.GetValue<bool?>(nameof(JobDescription.Enabled)) ?? jobDescription.Enabled;
-            jobDescription.MaxExecutedJobs = configuration.GetValue<int?>(nameof(JobDescription.MaxExecutedJobs)) ?? jobDescription.MaxExecutedJobs;
+            var name = configuration.GetValue<string?>(nameof(JobDescription.JobName));
+            var enabled = configuration.GetValue<bool?>(nameof(JobDescription.Enabled));
+            var maxExecutedJobs = configuration.GetValue<int?>(nameof(JobDescription.MaxExecutedJobs));
 
-            var section = configuration.GetSection("WaitForJobs");
-            jobDescription.JobDependencyIds = section.Exists() ? section.Get<IEnumerable<string>>() : [];
+            if (name is not null)
+            {
+                builder.Name(name);
+            }
+
+            if (enabled is not null)
+            {
+                builder.Enabled();
+            }
+
+            if (maxExecutedJobs is not null)
+            {
+                builder.MaxExecutedTasks(maxExecutedJobs.Value);
+            }
         }
     }
 }

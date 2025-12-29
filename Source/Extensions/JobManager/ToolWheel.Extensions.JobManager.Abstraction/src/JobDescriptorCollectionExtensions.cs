@@ -37,10 +37,8 @@ public static class JobDescriptorCollectionExtensions
 
     public static void AddMethod<T>(this JobDescriptionCollection collection, Expression<Func<T, Delegate>> expr, Action<JobDescriptionBuilder>? configure)
     {
-        var method = ResolveMethodCall(expr.Body) ?? throw new ArgumentException("Expression does not represent a method call.");
-        var jobDescription = JobDescriptionUtility.CreateJobDescription(method, m => JobIdResolver(collection, m));
-
-        configure?.Invoke(new JobDescriptionBuilder(jobDescription));
+        var target = ResolveMethodCall(expr.Body) ?? throw new ArgumentException("Expression does not represent a method call.");
+        var jobDescription = JobDescriptionUtility.CreateJobDescription(target, m => JobIdResolver(collection, m), configure);
 
         collection.Add(jobDescription);
     }
@@ -63,7 +61,7 @@ public static class JobDescriptorCollectionExtensions
         }
         else
         {
-            var count = collection.Count(m => m.Method == info.Method);
+            var count = collection.Count(m => m.Target == info.Method);
 
             return count == 0 ? MethodFullname(info.Method) : $"{MethodFullname(info.Method)}_{count}";
         }
@@ -72,7 +70,7 @@ public static class JobDescriptorCollectionExtensions
     private static string JobIdResolver(JobDescriptionCollection collection, MethodInfo method)
     {
 
-        var count = collection.Count(m => m.Method == method);
+        var count = collection.Count(m => m.Target == method);
 
         return count == 0 ? MethodFullname(method) : $"{MethodFullname(method)}_{count}";
     }

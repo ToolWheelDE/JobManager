@@ -5,23 +5,28 @@ using Microsoft.Extensions.Configuration;
 
 namespace ToolWheel.Extensions.JobManager.Configuration;
 
-public record JobDescription(MethodInfo Method) : IJobDescription
+public record JobDescription(string JobId) : IJobDescription
 {
-    public required string JobId { get; set; } = Guid.NewGuid().ToString();
+    public required MethodInfo Target { get; init; }
 
-    public IConfiguration? Configuration { get; set; } = null;
+    public IConfiguration? Configuration { get; init; } = null;
 
-    public string JobName { get; set; } = Method.Name;
+    public required string JobName { get; init; } 
 
-    public bool IsScoped { get; set; } = false;
+    public bool IsScoped { get; init; } 
 
-    public int MaxExecutedJobs { get; set; } = 1;
+    public int MaxExecutedJobs { get; init; }
 
-    public bool Enabled { get; set; } = true;
+    public bool Enabled { get; init; }
 
-    public IEnumerable<string>? JobDependencyIds { get; set; } = Array.Empty<string>();
+    public required IEnumerable<string> JobDependencyIds { get; init; }
 
-    public IEnumerable<string> Groups { get; set; } = Array.Empty<string>();
+    public required IEnumerable<string> Groups { get; init; }
 
-    public IDictionary<string, object> Properties { get; } = new Dictionary<string, object>();
+    public required IDictionary<string, object> Properties { get; init; }
+
+    public override int GetHashCode()
+    {
+        return JobId.GetHashCode();
+    }
 }

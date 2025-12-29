@@ -1,27 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
 namespace ToolWheel.Extensions.JobManager.Configuration;
-public interface IJobDescription
+
+public interface IJobDescription : IEquatable<JobDescription>
 {
-    MethodInfo Method { get; init; }
+    string JobId { get; init; }
 
-    string JobId { get; set; }
+    MethodInfo Target { get; init; }
 
-    bool IsScoped { get; set; }
+    IConfiguration? Configuration { get; init; }
 
-    IConfiguration? Configuration { get; set; }
+    string JobName { get; init; }
 
-    string JobName { get; set; }
+    bool IsScoped { get; init; }
 
-    int MaxExecutedJobs { get; set; }
+    int MaxExecutedJobs { get; init; }
 
-    bool Enabled { get; set; }
+    bool Enabled { get; init; }
 
-    IEnumerable<string>? JobDependencyIds { get; set; }
+    IEnumerable<string>? JobDependencyIds { get; init; }
 
-    IEnumerable<string> Groups { get; set; }
+    IEnumerable<string> Groups { get; init; }
 
-    IDictionary<string, object> Properties { get; }
+    IDictionary<string, object> Properties { get; init; }
 }

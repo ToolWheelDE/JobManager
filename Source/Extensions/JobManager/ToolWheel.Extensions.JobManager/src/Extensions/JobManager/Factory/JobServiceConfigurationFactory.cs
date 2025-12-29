@@ -1,20 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
-using ToolWheel.Extensions.JobManager.Configuration;
+﻿using ToolWheel.Extensions.JobManager.Configuration;
 using ToolWheel.Extensions.JobManager.Service;
 
 namespace ToolWheel.Extensions.JobManager.Factory;
 
 public class JobServiceConfigurationFactory : IJobServiceConfigurationFactory
 {
-        private readonly IJobServiceFactory _jobServiceFactory;
+    private readonly IJobServiceFactory _jobServiceFactory;
     private readonly IJobManagerConfiguration _jobManagerConfiguration;
-    private readonly IConfiguration _configuration;
 
-    public JobServiceConfigurationFactory(IJobServiceFactory jobServiceFactory, IJobManagerConfiguration jobManagerConfiguration, IConfiguration configuration)
+    public JobServiceConfigurationFactory(IJobServiceFactory jobServiceFactory, IJobManagerConfiguration jobManagerConfiguration)
     {
         _jobServiceFactory = jobServiceFactory;
         _jobManagerConfiguration = jobManagerConfiguration;
-        _configuration = configuration;
     }
 
     public IJobService CreateAndConfigure()
@@ -23,8 +20,6 @@ public class JobServiceConfigurationFactory : IJobServiceConfigurationFactory
 
         foreach (var jobDescription in _jobManagerConfiguration.JobDescriptions)
         {
-            jobDescription.Configuration = _configuration.GetSection("Jobs:" + jobDescription.JobId);
-
             jobService.Add(jobDescription);
         }
 

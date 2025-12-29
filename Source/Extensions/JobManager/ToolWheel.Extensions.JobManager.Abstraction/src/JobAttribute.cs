@@ -14,7 +14,7 @@ public sealed class JobAttribute : Attribute
 
     public string? JobId { get; }
 
-    public bool IsScoped { get; set; } = false;
+    public bool? IsScoped { get; set; }
 
-    public int MaxExecutedTasks { get; set; } = 1;
+    public int? MaxExecutedTasks { get; set; }
 }

@@ -16,7 +16,7 @@ public record Job(string Id) : IJob, IEquatable<IJob>
 
     public required bool IsScopedInstance { get; init; }
 
-    public required IConfiguration Configuration { get; init; }
+    public IConfiguration? Configuration { get; init; }
 
     public int MaxExecutedTasks { get; set; } = 1;
 
