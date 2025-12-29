@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -35,44 +36,38 @@ public static class JobDescriptorCollectionExtensions
         collection.AddMethod(method);
     }
 
-    public static void AddMethod<T>(this JobDescriptionCollection collection, Expression<Func<T, Delegate>> expr, Action<JobDescriptionBuilder>? configure)
+    public static void AddMethod<T>(this JobDescriptionCollection collection, Expression<Func<T, Delegate>> expr, Action<JobDescriptionBuilder>? configure = null)
     {
         var target = ResolveMethodCall(expr.Body) ?? throw new ArgumentException("Expression does not represent a method call.");
-        var jobDescription = JobDescriptionUtility.CreateJobDescription(target, m => JobIdResolver(collection, m), configure);
+        var builder = new JobDescriptionBuilder(target);
+        var jobDescription = JobDescriptionConfigurationUtility.CreateJobDescription(target, configure, m => JobIdResolver(collection, m));
 
         collection.Add(jobDescription);
     }
 
-    public static void AddMethod(this JobDescriptionCollection collection, MethodInfo methodInfo)
+    public static void AddMethod(this JobDescriptionCollection collection, MethodInfo target, Action<JobDescriptionBuilder>? configure = null)
     {
         if (collection == null) throw new ArgumentNullException(nameof(collection));
-        if (methodInfo == null) throw new ArgumentNullException(nameof(methodInfo));
+        if (target == null) throw new ArgumentNullException(nameof(target));
 
-        var jobDescriptions = JobDescriptionUtility.CreateJobDescriptions(methodInfo, m => JobIdResolver(collection, m));
+        var builder = new JobDescriptionBuilder(target);
+        var jobDescription = JobDescriptionConfigurationUtility.CreateJobDescription(target, configure, m => JobIdResolver(collection, m));
 
-        collection.AddRange(jobDescriptions);
+        collection.Add(jobDescription);
     }
 
     private static string JobIdResolver(JobDescriptionCollection collection, JobDescriptionIdInfo info)
     {
-        if (info.Attribute is not null)
+        if (info.Id is not null)
         {
-            return info.Attribute.JobId ?? $"{info.Method.DeclaringType!.FullName}.{info.Method.Name}";
+            return info.Id ?? $"{info.Target.DeclaringType!.FullName}.{info.Target.Name}";
         }
         else
         {
-            var count = collection.Count(m => m.Target == info.Method);
+            var count = collection.Count(m => m.Target == info.Target);
 
-            return count == 0 ? MethodFullname(info.Method) : $"{MethodFullname(info.Method)}_{count}";
+            return count == 0 ? MethodFullname(info.Target) : $"{MethodFullname(info.Target)}_{count}";
         }
-    }
-
-    private static string JobIdResolver(JobDescriptionCollection collection, MethodInfo method)
-    {
-
-        var count = collection.Count(m => m.Target == method);
-
-        return count == 0 ? MethodFullname(method) : $"{MethodFullname(method)}_{count}";
     }
 
     private static string MethodFullname(MethodInfo method)

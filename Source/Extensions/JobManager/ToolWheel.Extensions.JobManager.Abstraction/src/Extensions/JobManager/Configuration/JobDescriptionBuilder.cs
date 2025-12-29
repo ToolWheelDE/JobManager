@@ -18,7 +18,7 @@ public class JobDescriptionBuilder
     private readonly HashSet<string> _jobGroupIds = new HashSet<string>();
     private readonly Dictionary<string, object> _properties = new Dictionary<string, object>();
 
-    public JobDescriptionBuilder(MethodInfo target, string id)
+    public JobDescriptionBuilder(MethodInfo target, string? id = null)
     {
         _target = target;
         _id = id;
@@ -26,6 +26,11 @@ public class JobDescriptionBuilder
 
     public JobDescription Build()
     {
+        if(string.IsNullOrWhiteSpace(_id))
+        {
+            throw new InvalidOperationException("Job ID must be specified.");
+        }
+
         return new JobDescription(_id)
         {
             Target = _target,
@@ -36,6 +41,15 @@ public class JobDescriptionBuilder
             JobDependencyIds = _jobDependencyIds.ToArray(),
             Groups = _jobGroupIds.ToArray(),
             Properties = new Dictionary<string, object>(_properties)
+        };
+    }
+
+    public JobDescriptionIdInfo BuildInfo()
+    {
+        return new JobDescriptionIdInfo
+        {
+            Target = _target,
+            Id = _id!
         };
     }
 
@@ -123,7 +137,7 @@ public class JobDescriptionBuilder
 
     public JobDescriptionBuilder ApplyConfiguration(IConfiguration configuration)
     {
-        JobDescriptionUtility.ApplyConfiguration(this, configuration);
+        JobDescriptionConfigurationUtility.ApplyConfiguration(this, configuration);
         return this;
     }
 

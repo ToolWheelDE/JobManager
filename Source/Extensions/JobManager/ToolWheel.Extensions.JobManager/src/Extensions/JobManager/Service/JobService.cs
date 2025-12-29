@@ -68,7 +68,7 @@ public class JobService : IJobService
 
     public IJob? Add(MethodInfo method, Action<JobDescriptionBuilder>? configure = null)
     {
-        var jobDescription = JobDescriptionUtility.CreateJobDescription(method, JobIdResolver, configure);
+        var jobDescription = JobDescriptionConfigurationUtility.CreateJobDescription(method, configure, JobIdResolver);
 
         return Add(jobDescription);
     }
@@ -142,10 +142,10 @@ public class JobService : IJobService
     }
 
 
-    private string JobIdResolver(MethodInfo method)
+    private string JobIdResolver(JobDescriptionIdInfo info)
     {
-        var count = _jobs.Count(m => m.Method == method);
+        var count = _jobs.Count(m => m.Method == info.Target);
 
-        return count == 0 ? method.Name : $"{method.Name}_{count}";
+        return count == 0 ? info.Target.Name : $"{info.Target.Name}_{count}";
     }
 }
