@@ -16,7 +16,7 @@ public class JobDescriptionBuilder
     private bool? _enabled;
     private readonly HashSet<string> _jobDependencyIds = new HashSet<string>();
     private readonly HashSet<string> _jobGroupIds = new HashSet<string>();
-    private readonly Dictionary<string, object> _properties = new Dictionary<string, object>();
+    private readonly HashSet<IFeature> _features = new HashSet<IFeature>();
 
     public JobDescriptionBuilder(MethodInfo target, string? id = null)
     {
@@ -26,7 +26,7 @@ public class JobDescriptionBuilder
 
     public JobDescription Build()
     {
-        if(string.IsNullOrWhiteSpace(_id))
+        if (string.IsNullOrWhiteSpace(_id))
         {
             throw new InvalidOperationException("Job ID must be specified.");
         }
@@ -40,7 +40,7 @@ public class JobDescriptionBuilder
             Enabled = _enabled ?? true,
             JobDependencyIds = _jobDependencyIds.ToArray(),
             Groups = _jobGroupIds.ToArray(),
-            Properties = new Dictionary<string, object>(_properties)
+            Features = _features.ToArray()
         };
     }
 
@@ -117,23 +117,11 @@ public class JobDescriptionBuilder
         return this;
     }
 
-    //public JobDescriptionBuilder RemoveJobDependencyId(string jobId)
-    //{
-    //    JobDescription.JobDependencyIds = JobDescription?.JobDependencyIds?.Where(id => id != jobId) ?? [];
-    //    return this;
-    //}
-
     public JobDescriptionBuilder AddJobGroupId(string jobGroupId)
     {
         _jobGroupIds.Add(jobGroupId);
         return this;
     }
-
-    //public JobDescriptionBuilder RemoveJobGroupId(string jobGroupId)
-    //{
-    //    JobDescription.Groups = JobDescription?.Groups?.Where(id => id != jobGroupId) ?? [];
-    //    return this;
-    //}
 
     public JobDescriptionBuilder ApplyConfiguration(IConfiguration configuration)
     {
@@ -141,9 +129,10 @@ public class JobDescriptionBuilder
         return this;
     }
 
-    public JobDescriptionBuilder SetProperty(string key, object value)
+    public JobDescriptionBuilder AddFeature(IFeature feature)
     {
-        _properties[key] = value;
+        _features.Add(feature);
+
         return this;
     }
 }

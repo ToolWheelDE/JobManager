@@ -25,5 +25,5 @@ public interface IJobDescription : IEquatable<JobDescription>
 
     IEnumerable<string> Groups { get; init; }
 
-    IDictionary<string, object> Properties { get; init; }
+    IEnumerable<IFeature> Features { get; init; }
 }

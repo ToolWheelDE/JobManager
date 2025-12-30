@@ -22,7 +22,7 @@ public class JobSchedulerCreateAndConfigurationFactory : IJobSchedulerCreateAndC
 
         foreach (var jobDescription in _jobManagerConfiguration.JobDescriptions)
         {
-            if (jobDescription.TryGetProperty<JobSchedulerDescription>("JobSchedulerDescription", out var jobSchedulerDescription))
+            if (jobDescription.TryGetProperty<JobSchedulerDescription>(out var jobSchedulerDescription))
             {
                 var job = _jobService.Find(jobDescription.JobId);
 

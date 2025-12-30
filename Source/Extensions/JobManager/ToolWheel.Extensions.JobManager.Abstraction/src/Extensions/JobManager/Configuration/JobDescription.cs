@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
@@ -11,9 +12,9 @@ public record JobDescription(string JobId) : IJobDescription
 
     public IConfiguration? Configuration { get; init; } = null;
 
-    public required string JobName { get; init; } 
+    public required string JobName { get; init; }
 
-    public bool IsScoped { get; init; } 
+    public bool IsScoped { get; init; }
 
     public int MaxExecutedJobs { get; init; }
 
@@ -23,7 +24,7 @@ public record JobDescription(string JobId) : IJobDescription
 
     public required IEnumerable<string> Groups { get; init; }
 
-    public required IDictionary<string, object> Properties { get; init; }
+    public required IEnumerable<IFeature> Features { get; init; }
 
     public override int GetHashCode()
     {

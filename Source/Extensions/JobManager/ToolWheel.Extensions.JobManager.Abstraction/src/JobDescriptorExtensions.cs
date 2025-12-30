@@ -1,52 +1,25 @@
 ﻿using System;
+using System.Linq;
 using ToolWheel.Extensions.JobManager.Configuration;
 
 namespace ToolWheel;
 
 public static class JobDescriptorExtensions
 {
-    public static void SetProperty(this IJobDescription jobDescription, string key, object value)
+    public static bool TryGetProperty<T>(this IJobDescription jobDescription, out T? value)
+        where T : IFeature
     {
-        jobDescription.Properties[key] = value;
+        value = GetProperty<T>(jobDescription);
+
+        return value is not null;
     }
 
-    public static bool TryGetProperty(this IJobDescription jobDescription, string key, out object? value)
+    public static T? GetProperty<T>(this IJobDescription jobDescription)
+        where T : IFeature
     {
-        return jobDescription.Properties.TryGetValue(key, out value);
-    }
+        var type = typeof(T);
+        var result = jobDescription.Features.FirstOrDefault(f => f.GetType() == type);
 
-    public static object GetProperty(this IJobDescription jobDescription, string key)
-    {
-        return jobDescription.Properties[key];
-    }
-
-    public static bool TryGetProperty<T>(this IJobDescription jobDescription, string key, out T? value)
-    {
-        var result = jobDescription.Properties.TryGetValue(key, out var objValue);
-
-        value = result ? (T?)Convert.ChangeType(objValue, typeof(T)) : default;
-
-        return result;
-    }
-
-    public static T GetProperty<T>(this IJobDescription jobDescription, string key, T? defaultValue = default)
-    {
-        if (!jobDescription.TryGetProperty(key, out var value))
-        {
-            return defaultValue!;
-        }
-
-        if (value is null)
-        {
-            return defaultValue!;
-        }
-
-        var converted = Convert.ChangeType(value, typeof(T));
-        if (converted is null)
-        {
-            return defaultValue!;
-        }
-
-        return (T)converted;
+        return result is null ? default : (T)result;
     }
 }

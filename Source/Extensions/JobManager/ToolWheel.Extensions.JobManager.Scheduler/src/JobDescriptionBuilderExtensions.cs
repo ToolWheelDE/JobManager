@@ -10,7 +10,7 @@ public static class JobDescriptionBuilderExtensions
         var builder = new JobScheduleBuilder();
         configure(builder);
 
-        jobDescriptionBuilder.SetProperty("JobSchedulerDescription", builder.Build());
+        jobDescriptionBuilder.AddFeature(builder.Build());
 
         return jobDescriptionBuilder;
     }
