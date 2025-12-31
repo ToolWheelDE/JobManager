@@ -6,4 +6,8 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>default</LangVersion>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<Version>1.0.0-preview.1</Version>
+	</PropertyGroup>
 </Project>

@@ -5,7 +5,8 @@
 		<TargetFramework>net8.0</TargetFramework>
 	</PropertyGroup>
 	<PropertyGroup>
-		<IsPackable>false</IsPackable>
+		<IsPackable>true</IsPackable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>ToolWheel.Extenions.JobManager.Scheduler</PackageId>
 	</PropertyGroup>
 	<ItemGroup>
