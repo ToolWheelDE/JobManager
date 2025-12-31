@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
 
         jobManagerConfigurationBuilder.ConfigureMiddleware(configure =>
         {
-            configure.AddLast<JobExceptionHandlerMiddleware>();
+            //configure.AddLast<JobExceptionHandlerMiddleware>();
             configure.AddLast<JobExecutionMiddleware>();
         });
 

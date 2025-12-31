@@ -1,9 +1,7 @@
 ﻿namespace ToolWheel.Extensions.JobManager;
 public interface IJobTaskContext
 {
-    IJobTask JobTask { get; }
+    IJobTask JobTask { get; init; }
 
-    JobTaskStatus Status { get; }
-
-    IJobLogger? Journal { get; }
+    IJobLogger? Journal { get; init; }
 }

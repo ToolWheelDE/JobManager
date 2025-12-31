@@ -29,7 +29,7 @@ public static class JobManagerResilienceServiceExtensions
         .ConfigureMiddleware(middleware =>
         {
             // Das Retry vor dem Exception Handling Middleware ausführen
-            middleware.AddBefore<JobTaskRetryMiddleware, JobExceptionHandlerMiddleware>();
+            middleware.AddBefore<JobTaskRetryMiddleware, JobExecutionMiddleware>();
         });
 
         return builder;

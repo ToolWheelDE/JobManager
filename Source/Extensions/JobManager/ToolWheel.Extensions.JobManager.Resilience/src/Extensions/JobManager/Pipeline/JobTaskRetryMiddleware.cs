@@ -33,7 +33,7 @@ public class JobTaskRetryMiddleware : IExecutionMiddlewareAsync
 
                 await next().ConfigureAwait(false);
 
-                if (contextBuilder.Status == JobTaskStatus.Success)
+                if (contextBuilder.JobTask.Status == JobTaskStatus.Success)
                 {
                     return;
                 }

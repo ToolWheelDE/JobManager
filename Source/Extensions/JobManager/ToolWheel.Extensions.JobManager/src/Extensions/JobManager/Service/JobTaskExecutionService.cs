@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,15 +26,16 @@ public class JobTaskExecutionService : IJobTaskExecutionService
 
     public IJobTask? Execute(IJob job)
     {
-        if (job is null) throw new ArgumentNullException(nameof(job));
+        if (job is null)
+        {
+            throw new ArgumentNullException(nameof(job));
+        }
 
         var jobTask = new JobTask(job, Guid.NewGuid().ToString());
-
         var cts = new CancellationTokenSource();
+
         jobTask.CancellationToken = cts;
-
-        jobTask.ExecutionTask = Task.Run(() => GenerateExecutionPipelineAsync(jobTask, cts.Token), cts.Token);
-
+        jobTask.ExecutionTask = Task.Run(() => UseProviderScopeAsync(jobTask, cts.Token), cts.Token);
         jobTask.ExecutionTask.ContinueWith(t =>
         {
             if (t.Exception != null)
@@ -47,7 +49,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
         return jobTask;
     }
 
-    private async Task GenerateExecutionPipelineAsync(JobTask jobTask, CancellationToken cancellationToken)
+    private async Task UseProviderScopeAsync(JobTask jobTask, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         using var loggerScope = _logger.BeginScope(new { jobTask.Id, jobTask.Job });
@@ -56,18 +58,22 @@ public class JobTaskExecutionService : IJobTaskExecutionService
         var provider = scope.ServiceProvider;
 
         var asyncMiddlewares = provider.GetServices<IExecutionMiddlewareAsync>().ToArray();
-        var jobTaskJournalService = provider.GetRequiredService<IJobTaskJournalService>();
+        var jobTaskContextBuilder = new JobTaskContextBuilder(jobTask);
 
-        var jobTaskContextAccessor = provider.GetRequiredService<IJobTaskContextAccessor>() as JobTaskContextAccessor
-            ?? throw new InvalidOperationException("JobTaskContextAccessor is not writable.");
-        var jobTaskContext = new JobTaskContext(jobTask);
-        var jobTaskContextBuilder = new JobTaskContextBuilder(jobTask, jobTaskContext);
-        var journalList = new List<IJournalEntry>();
+        Func<Task> pipeline = GenerateExecutionPipeline2(asyncMiddlewares, jobTaskContextBuilder, cancellationToken);
 
-        jobTaskJournalService.AddTask(jobTask, journalList);
-        jobTaskContextAccessor.JobTaskContext = jobTaskContextBuilder;
-        jobTaskContext.Journal = new JournalLogger(jobTask.Job.Logger, journalList);
+        try
+        {
+            await ExecuteMiddlewarePipelineAsync(provider, jobTaskContextBuilder, jobTask, pipeline, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            jobTask.CancellationToken?.Dispose();
+        }
+    }
 
+    private Func<Task> GenerateExecutionPipeline2(IExecutionMiddlewareAsync[] asyncMiddlewares, JobTaskContextBuilder jobTaskContextBuilder, CancellationToken cancellationToken)
+    {
         Func<Task> pipeline = () =>
         {
             _logger.LogTrace("Job task pipeline was completed.");
@@ -86,30 +92,31 @@ public class JobTaskExecutionService : IJobTaskExecutionService
             };
         }
 
-        try
-        {
-            await ExecuteMiddlewarePipelineAsync(jobTask, pipeline, cancellationToken).ConfigureAwait(false);
-        }
-        finally
-        {
-            jobTask.CancellationToken?.Dispose();
-        }
+        return pipeline;
     }
 
-    private async Task ExecuteMiddlewarePipelineAsync(JobTask jobTask, Func<Task> pipeline, CancellationToken cancellationToken)
+    private async Task ExecuteMiddlewarePipelineAsync(IServiceProvider provider, JobTaskContextBuilder jobTaskContextBuilder, JobTask jobTask, Func<Task> pipeline, CancellationToken cancellationToken)
     {
+        _logger.LogDebug("Executing stage pipeline.");
+
+        jobTask.Status = JobTaskStatus.Running;
+        jobTask.StartTimesstamp = DateTime.UtcNow;
+
+        var jobTaskContextAccessor = provider.GetRequiredService<IJobTaskContextAccessor>() as JobTaskContextAccessor ?? throw new InvalidOperationException("JobTaskContextAccessor is not writable.");
+        jobTaskContextAccessor.JobTaskContext = jobTaskContextBuilder.Build();
+
         try
         {
-            _logger.LogDebug("Executing stage pipeline.");
-
-            jobTask.Status = JobTaskStatus.Running;
-            jobTask.StartTimesstamp = DateTime.UtcNow;
-
             await pipeline().ConfigureAwait(false);
 
+            jobTask.Status = JobTaskStatus.Success;
+        }
+        catch (TargetInvocationException ex) when (ex.InnerException is not null)
+        {
+            _logger.LogWarning(ex.InnerException, "Invocation exception during job task pipeline execution for {JobTaskId}.", jobTask.Id);
             if (jobTask.Status == JobTaskStatus.Running)
             {
-                jobTask.Status = JobTaskStatus.Success;
+                jobTask.Status = JobTaskStatus.Failed;
             }
         }
         catch (JobTaskExecutionException ex)

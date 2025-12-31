@@ -60,12 +60,9 @@ public class JobExecutionMiddleware : IExecutionMiddlewareAsync
             }
 
             contextBuilder.Journal?.LogInformation("Job Task completed in {runtime}", contextBuilder.JobTask.Runtime);
-            contextBuilder.Status = JobTaskStatus.Success;
         }
         catch (TargetInvocationException ex)
         {
-            contextBuilder.Status = JobTaskStatus.Failed;
-
             // Wenn die aufgerufene Methode abgebrochen wurde, Propagiere die OCE direkt, damit Cancellation erkannt wird.
             if (ex.InnerException is OperationCanceledException oce && cancellationToken.IsCancellationRequested)
             {
@@ -76,12 +73,10 @@ public class JobExecutionMiddleware : IExecutionMiddlewareAsync
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            contextBuilder.Status = JobTaskStatus.Failed;
             throw;
         }
         catch (Exception ex)
         {
-            contextBuilder.Status = JobTaskStatus.Failed;
             throw new JobTaskExecutionException(contextBuilder.JobTask, "An error occurred while executing the job", ex);
         }
 
@@ -92,7 +87,7 @@ public class JobExecutionMiddleware : IExecutionMiddlewareAsync
         }
     }
 
-    private object CreateInstance(IJobTaskContext jobTaskContext, CancellationToken cancellationToken)
+    private object CreateInstance(IJobTaskContextBuilder jobTaskContext, CancellationToken cancellationToken)
     {
         if (jobTaskContext.JobTask.Job.IsScopedInstance)
         {
@@ -110,16 +105,15 @@ public class JobExecutionMiddleware : IExecutionMiddlewareAsync
         return _jobInstanceService.GetJobInstance(jobTaskContext.JobTask.Job)!;
     }
 
-    private IEnumerable<object?> ResolveMethodParameters(MethodBase method, IJobTaskContext context, CancellationToken cancellationToken)
+    private IEnumerable<object?> ResolveMethodParameters(MethodBase method, IJobTaskContextBuilder jobTaskContext, CancellationToken cancellationToken)
     {
         foreach (var parameter in method.GetParameters())
         {
             var type = parameter.ParameterType;
 
-            if (typeof(IJob).IsAssignableFrom(type)) yield return context.JobTask.Job;
-            else if (typeof(IJobTask).IsAssignableFrom(type)) yield return context.JobTask;
-            else if (typeof(IJobTaskContext).IsAssignableFrom(type)) yield return context;
-            else if (typeof(IJobLogger).IsAssignableFrom(type)) yield return context.Journal;
+            if (typeof(IJob).IsAssignableFrom(type)) yield return jobTaskContext.JobTask.Job;
+            else if (typeof(IJobTask).IsAssignableFrom(type)) yield return jobTaskContext.JobTask;
+            else if (typeof(IJobLogger).IsAssignableFrom(type)) yield return jobTaskContext.Journal;
             else if (type == typeof(CancellationToken)) yield return cancellationToken;
             else yield return _serviceProvider.GetService(type);
         }

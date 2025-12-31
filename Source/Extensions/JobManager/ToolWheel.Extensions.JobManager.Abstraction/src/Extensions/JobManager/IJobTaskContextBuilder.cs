@@ -1,13 +1,10 @@
 ﻿using System;
 
 namespace ToolWheel.Extensions.JobManager;
-public interface IJobTaskContextBuilder : IJobTaskContext
+
+public interface IJobTaskContextBuilder
 {
-    new JobTaskStatus Status { get; set; }
+    IJobTask JobTask { get; }
 
-    DateTime? CreateTimesstamp { get; }
-
-    DateTime? StartTimesstamp { get; set; }
-
-    DateTime? CompletTimesstamp { get; set; }
+    IJobLogger? Journal { get; set; }
 }
