@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<!-- Generelle Projekt Konfiguration -->
+	<PropertyGroup>
+		<TargetFrameworks>net8.0</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>ToolWheel.Extenions.JobManager</PackageId>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\ToolWheel.Extensions.JobManager.Abstraction\src\ToolWheel.Extensions.JobManager.Abstraction.csproj" />
+	</ItemGroup>
+</Project>

@@ -1,0 +1,83 @@
+name: Build and Publish NuGet packages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Determine package version from tag and ensure tag is on master
+        id: vars
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG=${GITHUB_REF#refs/tags/}
+            VERSION=${TAG#v}
+            echo "Detected tag: $TAG -> version: $VERSION"
+          else
+            echo "No tag ref found. Exiting."
+            exit 1
+          fi
+
+          # Stelle sicher, dass der Commit des Tags in origin/master enthalten ist
+          echo "Fetching origin/master..."
+          git fetch origin master --no-tags
+
+          # GITHUB_SHA ist der Commit, auf den das Tag zeigt
+          if git merge-base --is-ancestor "${GITHUB_SHA}" origin/master; then
+            echo "Tag commit ${GITHUB_SHA} is contained in origin/master — continuing."
+          else
+            echo "::error::Tag commit ${GITHUB_SHA} is NOT contained in origin/master. Aborting workflow."
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Test
+        run: |
+          dotnet test -c Release --no-restore --logger "trx;LogFileName=test_results.trx"
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/TestResults/*.trx'
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Pack projects (alle csproj unter Source) mit Version aus Git-Tag
+        run: |
+          mkdir -p artifacts
+          for proj in $(git ls-files 'Source/**/*.csproj'); do
+            echo "Packing $proj with version ${{ steps.vars.outputs.version }}"
+            dotnet pack "$proj" -c Release --no-build -o artifacts /p:Version=${{ steps.vars.outputs.version }} || \
+            dotnet pack "$proj" -c Release -o artifacts /p:Version=${{ steps.vars.outputs.version }}
+          done
+
+      - name: Push packages to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for pkg in artifacts/*.nupkg; do
+            echo "Pushing $pkg"
+            dotnet nuget push "$pkg" --api-key $GITHUB_TOKEN --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
+          done

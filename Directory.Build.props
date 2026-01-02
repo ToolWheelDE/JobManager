@@ -1,0 +1,13 @@
+<Project>
+	<!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
+	<PropertyGroup>
+		<TargetFrameworks>net8.0</TargetFrameworks>
+		<RootNamespace>ToolWheel</RootNamespace>
+		<Nullable>enable</Nullable>
+		<LangVersion>default</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Version>1.0.0-preview.1</Version>
+	</PropertyGroup>
+</Project>
