@@ -2,8 +2,13 @@ name: Build and Publish NuGet packages
 
 on:
   push:
+    branches:
+      - master
     tags:
       - 'v*.*.*'
+  pull_request:
+    types:
+      - closed
 
 permissions:
   packages: write
@@ -11,35 +16,76 @@ permissions:
 
 jobs:
   publish:
+    if: >-
+      github.event_name != 'pull_request' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
-      - name: Determine package version from tag and ensure tag is on master
+      - name: Determine package version from tag (current commit or nearest tag) and ensure tag is in origin/master
         id: vars
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            TAG=${GITHUB_REF#refs/tags/}
-            VERSION=${TAG#v}
-            echo "Detected tag: $TAG -> version: $VERSION"
-          else
-            echo "No tag ref found. Exiting."
-            exit 1
+          set -euo pipefail
+
+          # Wenn Event Pull Request und nicht gemerged, abbrechen (Sicherheitsnetz, sollte durch job if verhindert sein)
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            if [ -f "${GITHUB_EVENT_PATH}" ]; then
+              PR_MERGED=$(jq -r .pull_request.merged < "${GITHUB_EVENT_PATH}")
+              if [ "$PR_MERGED" != "true" ]; then
+                echo "Pull request geschlossen, aber nicht gemerged — kein Publish."
+                exit 0
+              fi
+            fi
           fi
 
-          # Stelle sicher, dass der Commit des Tags in origin/master enthalten ist
-          echo "Fetching origin/master..."
-          git fetch origin master --no-tags
+          # Holen der Tags sicherstellen
+          git fetch --tags --prune || true
 
-          # GITHUB_SHA ist der Commit, auf den das Tag zeigt
+          TAG=""
+          # 1) Falls Event ein Tag-Push ist, diesen Tag verwenden
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG=${GITHUB_REF#refs/tags/}
+          else
+            # stelle sicher, dass lokale Tag-Info vorhanden ist
+            git fetch --tags || true
+            TAG=$(git tag --points-at "${GITHUB_SHA}" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)
+          fi
+
+          # 2) Falls kein Tag-Event: Prüfen ob aktueller Commit direkt einen Tag hat
+          if [ -z "$TAG" ]; then
+            TAG=$(git tag --points-at "${GITHUB_SHA}" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | head -n1 || true)
+          fi
+
+          # 3) Falls immer noch kein Tag: nächstgelegenen Tag (nearest) vom aktuellen Commit ermitteln
+          if [ -z "$TAG" ]; then
+            TAG=$(git describe --tags --match 'v[0-9]*' --abbrev=0 "${GITHUB_SHA}" 2>/dev/null || true)
+          fi
+
+          if [ -z "$TAG" ]; then
+            echo "Kein passender Tag (vX.Y.Z) für den aktuellen Commit gefunden. Workflow beendet (kein Publish)."
+            exit 0
+          fi
+
+          VERSION=${TAG#v}
+          echo "Detected tag: $TAG -> version: $VERSION"
+
+          # Stelle sicher, dass der Tag-Commit in origin/master enthalten ist
+          TAG_COMMIT_SHA=$(git rev-list -n 1 "$TAG")
+          echo "Tag commit: $TAG_COMMIT_SHA"
+
+          echo "Fetching origin/master..."
+          git fetch origin master --no-tags || true
+
+          # GITHUB_SHA ist der Commit, auf den das Tag zeigt bzw. der aktuelle Commit
           if git merge-base --is-ancestor "${GITHUB_SHA}" origin/master; then
             echo "Tag commit ${GITHUB_SHA} is contained in origin/master — continuing."
           else
