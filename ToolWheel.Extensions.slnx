@@ -16,7 +16,7 @@
   <Folder Name="/Source/extensions/JobManager/ToolWheel.Extensions.JobManager.Resilience/test/">
     <Project Path="Source/extensions/JobManager/ToolWheel.Extensions.JobManager.Resilience/test/ToolWheel.Extensions.JobManager.Resilience.Test.csproj" />
   </Folder>
-    <Folder Name="/Source/extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/" />
+  <Folder Name="/Source/extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/" />
   <Folder Name="/Source/extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/src/">
     <Project Path="Source/extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/src/ToolWheel.Extensions.JobManager.Scheduler.csproj" />
   </Folder>
