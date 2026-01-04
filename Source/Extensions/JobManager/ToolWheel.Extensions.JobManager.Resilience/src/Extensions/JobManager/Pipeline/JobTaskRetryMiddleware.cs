@@ -9,12 +9,13 @@ using ToolWheel.Extensions.JobManager.Service;
 using Microsoft.Extensions.Logging;
 
 namespace ToolWheel.Extensions.JobManager.Pipeline;
+
 public class JobTaskRetryMiddleware : IExecutionMiddlewareAsync
 {
     private readonly ILogger<JobTaskRetryMiddleware>? _logger;
     private readonly IJobTaskRetryService _jobTaskRetryService;
 
-    public JobTaskRetryMiddleware(ILogger<JobTaskRetryMiddleware>? logger, IJobTaskRetryService jobTaskRetryService)
+    public JobTaskRetryMiddleware(IJobTaskRetryService jobTaskRetryService, ILogger<JobTaskRetryMiddleware>? logger = null)
     {
         _logger = logger;
         _jobTaskRetryService = jobTaskRetryService;

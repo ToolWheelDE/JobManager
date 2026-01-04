@@ -10,7 +10,7 @@ public class JobSchedulerService : IJobSchedulerService
     private readonly Dictionary<IJob, JobScheduler> _scheduledJobs = new();
     private readonly ILogger<JobSchedulerService>? _logger;
 
-    public JobSchedulerService(ILogger<JobSchedulerService>? logger)
+    public JobSchedulerService(ILogger<JobSchedulerService>? logger = null)
     {
         _logger = logger;
     }

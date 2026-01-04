@@ -15,7 +15,7 @@ public class JobSchedulerHostedService : BackgroundService
     private readonly IJobSchedulerHeartbeatService _jobSchedulerHeartbeatService;
     private readonly IJobTaskService _jobTaskService;
 
-    public JobSchedulerHostedService(ILogger<JobSchedulerHostedService>? logger, IJobSchedulerService jobSchedulerService, IJobSchedulerHeartbeatService jobSchedulerHeartbeatService, IJobTaskService jobTaskService)
+    public JobSchedulerHostedService(IJobSchedulerService jobSchedulerService, IJobSchedulerHeartbeatService jobSchedulerHeartbeatService, IJobTaskService jobTaskService, ILogger<JobSchedulerHostedService>? logger = null)
     {
         _logger = logger;
         _jobSchedulerService = jobSchedulerService;
@@ -49,7 +49,7 @@ public class JobSchedulerHostedService : BackgroundService
             {
                 var triggers = jobScheduler.Entries.Where(m => CheckExecution(m, signalDate));
 
-                if(triggers.Any())
+                if (triggers.Any())
                 {
                     _jobTaskService.Execute(jobScheduler.Job);
                 }
