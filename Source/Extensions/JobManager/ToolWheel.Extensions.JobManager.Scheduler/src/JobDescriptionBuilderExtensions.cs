@@ -1,5 +1,4 @@
-﻿using System;
-using ToolWheel;
+using System;
 using ToolWheel.Extensions.JobManager.Configuration;
 
 namespace ToolWheel;

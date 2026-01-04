@@ -1,13 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ToolWheel.Extensions.JobManager;
 using ToolWheel.Extensions.JobManager.Configuration;
 using ToolWheel.Extensions.JobManager.Factory;
 using ToolWheel.Extensions.JobManager.Pipeline;
@@ -18,14 +13,12 @@ public class JobService : IJobService
 {
     private readonly ILogger<JobService>? _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration? _configuration;
     private readonly List<Job> _jobs = new List<Job>();
 
-    public JobService(IServiceProvider serviceProvider, ILogger<JobService>? logger = null, IConfiguration? configuration = null)
+    public JobService(IServiceProvider serviceProvider, ILogger<JobService>? logger = null)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
-        _configuration = configuration;
     }
 
     public IJob? Add(IJobDescription jobDescription)
@@ -42,7 +35,7 @@ public class JobService : IJobService
             Target = jobDescription.Target,
             Name = jobDescription.JobName,
             IsScopedInstance = jobDescription.IsScoped,
-            Configuration = jobDescription?.Configuration,
+            Configuration = jobDescription.Configuration ?? null,
             MaxExecutedTasks = jobDescription.MaxExecutedJobs,
             Enabled = jobDescription.Enabled,
             JobDependencyIds = jobDescription?.JobDependencyIds?.ToList() ?? new List<string>()

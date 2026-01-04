@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ToolWheel.Extensions.JobManager;
 
 namespace ToolWheel.Extensions.JobManager.Service;
 
@@ -54,7 +53,7 @@ public class JobTaskService : IJobTaskService
     {
         var taskArray = _tasks
             .SelectMany(m => m.Value)
-            .Where(m => m is not null && m.Status == JobTaskStatus.Running || m.Status == JobTaskStatus.Pending)
+            .Where(m => m is not null && (m.Status == JobTaskStatus.Running || m.Status == JobTaskStatus.Pending))
             .Select(m => m.ExecutionTask)
             .ToArray();
 

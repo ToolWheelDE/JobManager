@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using ToolWheel.Extensions.JobManager;
 using ToolWheel.Extensions.JobManager.Configuration;
 using ToolWheel.Extensions.JobManager.Factory;

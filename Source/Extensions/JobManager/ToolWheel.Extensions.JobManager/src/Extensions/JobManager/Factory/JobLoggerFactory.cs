@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Logging;
-using ToolWheel.Extensions.JobManager;
 
 namespace ToolWheel.Extensions.JobManager.Factory;
 public class JobLoggerFactory : IJobLoggerFactory
