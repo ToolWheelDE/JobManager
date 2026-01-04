@@ -14,10 +14,10 @@ namespace ToolWheel.Extensions.JobManager.Service;
 public class JobTaskExecutionService : IJobTaskExecutionService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<JobTaskExecutionService> _logger;
+    private readonly ILogger<JobTaskExecutionService>? _logger;
     private readonly IJobService _jobService;
 
-    public JobTaskExecutionService(IServiceScopeFactory serviceScopeFactory, ILogger<JobTaskExecutionService> logger, IJobService jobService)
+    public JobTaskExecutionService(IServiceScopeFactory serviceScopeFactory, ILogger<JobTaskExecutionService>? logger, IJobService jobService)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
@@ -40,11 +40,11 @@ public class JobTaskExecutionService : IJobTaskExecutionService
         {
             if (t.Exception != null)
             {
-                _logger.LogError(t.Exception, "Unhandled exception in job task {JobTaskId} for job {JobId}.", jobTask.Id, job.Id);
+                _logger?.LogError(t.Exception, "Unhandled exception in job task {JobTaskId} for job {JobId}.", jobTask.Id, job.Id);
             }
         }, TaskContinuationOptions.OnlyOnFaulted);
 
-        _logger.LogInformation("Job task {JobTaskId} for job {JobId} started.", jobTask.Id, job.Id);
+        _logger?.LogInformation("Job task {JobTaskId} for job {JobId} started.", jobTask.Id, job.Id);
 
         return jobTask;
     }
@@ -76,7 +76,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
     {
         Func<Task> pipeline = () =>
         {
-            _logger.LogTrace("Job task pipeline was completed.");
+            _logger?.LogTrace("Job task pipeline was completed.");
             return Task.CompletedTask;
         };
 
@@ -87,7 +87,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
             var next = pipeline;
             pipeline = () =>
             {
-                _logger.LogTrace("Executing async middleware {Middleware}.", middleware.GetType().Name);
+                _logger?.LogTrace("Executing async middleware {Middleware}.", middleware.GetType().Name);
                 return middleware.InvokeAsync(jobTaskContextBuilder, next, cancellationToken);
             };
         }
@@ -97,7 +97,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
 
     private async Task ExecuteMiddlewarePipelineAsync(IServiceProvider provider, JobTaskContextBuilder jobTaskContextBuilder, JobTask jobTask, Func<Task> pipeline, CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Executing stage pipeline.");
+        _logger?.LogDebug("Executing stage pipeline.");
 
         jobTask.Status = JobTaskStatus.Running;
         jobTask.StartTimesstamp = DateTime.UtcNow;
@@ -113,7 +113,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
         }
         catch (TargetInvocationException ex) when (ex.InnerException is not null)
         {
-            _logger.LogWarning(ex.InnerException, "Invocation exception during job task pipeline execution for {JobTaskId}.", jobTask.Id);
+            _logger?.LogWarning(ex.InnerException, "Invocation exception during job task pipeline execution for {JobTaskId}.", jobTask.Id);
             if (jobTask.Status == JobTaskStatus.Running)
             {
                 jobTask.Status = JobTaskStatus.Failed;
@@ -121,7 +121,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
         }
         catch (JobTaskExecutionException ex)
         {
-            _logger.LogWarning(ex, "Job task execution exception for {JobTaskId}.", jobTask.Id);
+            _logger?.LogWarning(ex, "Job task execution exception for {JobTaskId}.", jobTask.Id);
             if (jobTask.Status == JobTaskStatus.Running)
             {
                 jobTask.Status = JobTaskStatus.Failed;
@@ -129,12 +129,12 @@ public class JobTaskExecutionService : IJobTaskExecutionService
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Job task {JobTaskId} was cancelled.", jobTask.Id);
+            _logger?.LogInformation("Job task {JobTaskId} was cancelled.", jobTask.Id);
             jobTask.Status = JobTaskStatus.Failed;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred during job task pipeline execution.");
+            _logger?.LogError(ex, "An error occurred during job task pipeline execution.");
             jobTask.Status = JobTaskStatus.Broken;
         }
         finally

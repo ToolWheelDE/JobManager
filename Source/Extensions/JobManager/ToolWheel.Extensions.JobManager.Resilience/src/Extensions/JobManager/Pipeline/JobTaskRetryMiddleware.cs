@@ -11,10 +11,10 @@ using Microsoft.Extensions.Logging;
 namespace ToolWheel.Extensions.JobManager.Pipeline;
 public class JobTaskRetryMiddleware : IExecutionMiddlewareAsync
 {
-    private readonly ILogger<JobTaskRetryMiddleware> _logger;
+    private readonly ILogger<JobTaskRetryMiddleware>? _logger;
     private readonly IJobTaskRetryService _jobTaskRetryService;
 
-    public JobTaskRetryMiddleware(ILogger<JobTaskRetryMiddleware> logger, IJobTaskRetryService jobTaskRetryService)
+    public JobTaskRetryMiddleware(ILogger<JobTaskRetryMiddleware>? logger, IJobTaskRetryService jobTaskRetryService)
     {
         _logger = logger;
         _jobTaskRetryService = jobTaskRetryService;
@@ -40,13 +40,13 @@ public class JobTaskRetryMiddleware : IExecutionMiddlewareAsync
 
                 if (counter >= strategy.RetryCount)
                 {
-                    _logger.LogWarning("Execution has failed {count} times, task execution is aborted.", counter);
+                    _logger?.LogWarning("Execution has failed {count} times, task execution is aborted.", counter);
                     break;
                 }
 
                 if (strategy.RetryDelay is not null)
                 {
-                    _logger.LogWarning("Execution {count} has failed and is repeated in {timespan}.", counter, strategy.RetryDelay);
+                    _logger?.LogWarning("Execution {count} has failed and is repeated in {timespan}.", counter, strategy.RetryDelay);
 
                     try
                     {
@@ -54,14 +54,14 @@ public class JobTaskRetryMiddleware : IExecutionMiddlewareAsync
                     }
                     catch (OperationCanceledException)
                     {
-                        _logger.LogInformation("Retry delay cancelled by token.");
+                        _logger?.LogInformation("Retry delay cancelled by token.");
                         throw;
                     }
                 }
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("Invocation cancelled by token.");
+                    _logger?.LogInformation("Invocation cancelled by token.");
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }

@@ -10,12 +10,12 @@ namespace ToolWheel.Extensions.JobManager.Service;
 
 public class JobSchedulerHostedService : BackgroundService
 {
-    private readonly ILogger<JobSchedulerHostedService> _logger;
+    private readonly ILogger<JobSchedulerHostedService>? _logger;
     private readonly IJobSchedulerService _jobSchedulerService;
     private readonly IJobSchedulerHeartbeatService _jobSchedulerHeartbeatService;
     private readonly IJobTaskService _jobTaskService;
 
-    public JobSchedulerHostedService(ILogger<JobSchedulerHostedService> logger, IJobSchedulerService jobSchedulerService, IJobSchedulerHeartbeatService jobSchedulerHeartbeatService, IJobTaskService jobTaskService)
+    public JobSchedulerHostedService(ILogger<JobSchedulerHostedService>? logger, IJobSchedulerService jobSchedulerService, IJobSchedulerHeartbeatService jobSchedulerHeartbeatService, IJobTaskService jobTaskService)
     {
         _logger = logger;
         _jobSchedulerService = jobSchedulerService;
@@ -27,7 +27,7 @@ public class JobSchedulerHostedService : BackgroundService
     {
         _jobTaskService.WaitAllTasks();
 
-        _logger.LogInformation("Job-Scheduler service is stopped.");
+        _logger?.LogInformation("Job-Scheduler service is stopped.");
 
         return base.StopAsync(cancellationToken);
     }
@@ -36,7 +36,7 @@ public class JobSchedulerHostedService : BackgroundService
     {
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
 
-        _logger.LogInformation("Job-Scheduler service is starting.");
+        _logger?.LogInformation("Job-Scheduler service is starting.");
 
         _jobSchedulerHeartbeatService.UpdateHeartbeat();
 
@@ -63,7 +63,7 @@ public class JobSchedulerHostedService : BackgroundService
             _jobSchedulerHeartbeatService.UpdateHeartbeat();
         }
 
-        _logger.LogInformation("Job-Scheduler service is stopping.");
+        _logger?.LogInformation("Job-Scheduler service is stopping.");
     }
 
     private bool CheckExecution(JobSchedulerEntry jobSchedulerEntry, DateTime signalDate)

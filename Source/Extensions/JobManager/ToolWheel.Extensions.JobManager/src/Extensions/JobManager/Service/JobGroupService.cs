@@ -11,9 +11,9 @@ public class JobGroupService : IJobGroupService
     private readonly Dictionary<IJobGroup, HashSet<IJob>> _jobGroupToJobs = new();
     private readonly Dictionary<IJob, HashSet<IJobGroup>> _jobToJobGroups = new();
 
-    private readonly ILogger<JobGroupService> _logger;
+    private readonly ILogger<JobGroupService>? _logger;
 
-    public JobGroupService(ILogger<JobGroupService> logger)
+    public JobGroupService(ILogger<JobGroupService>? logger)
     {
         _logger = logger;
     }
@@ -28,13 +28,13 @@ public class JobGroupService : IJobGroupService
 
         if (_jobGroupToJobs.ContainsKey(jobGroup))
         {
-            _logger.LogWarning("Job group {JobGroupId} already exists", jobGroup.Id);
+            _logger?.LogWarning("Job group {JobGroupId} already exists", jobGroup.Id);
             return null;
         }
 
         _jobGroupToJobs.Add(jobGroup, new HashSet<IJob>());
 
-        _logger.LogInformation("Adding job group {JobGroupId} with name {JobGroupName}", jobGroup.Id, jobGroup.Name);
+        _logger?.LogInformation("Adding job group {JobGroupId} with name {JobGroupName}", jobGroup.Id, jobGroup.Name);
         return jobGroup;
     }
 
@@ -49,7 +49,7 @@ public class JobGroupService : IJobGroupService
         {
             GetHashSet(job).Add(jobGroup);
 
-            _logger.LogInformation("Added job {JobId} to job group {JobGroupId}", job.Id, jobGroup.Id);
+            _logger?.LogInformation("Added job {JobId} to job group {JobGroupId}", job.Id, jobGroup.Id);
         }
     }
 
@@ -59,7 +59,7 @@ public class JobGroupService : IJobGroupService
         {
             GetHashSet(job).Remove(jobGroup);
 
-            _logger.LogInformation("Removed job {JobId} from job group {JobGroupId}", job.Id, jobGroup.Id);
+            _logger?.LogInformation("Removed job {JobId} from job group {JobGroupId}", job.Id, jobGroup.Id);
         }
     }
 
