@@ -36,7 +36,7 @@ public static class JobDescriptorCollectionExtensions
         AddMethod(collection, target, configure);
     }
 
-    public static void AddMethod<T>(this JobDescriptionCollection collection, Delegate method, Action<JobDescriptionBuilder>? configure = null)
+    public static void AddMethod(this JobDescriptionCollection collection, Delegate method, Action<JobDescriptionBuilder>? configure = null)
     {
         AddMethod(collection, method.Method, configure);
     }

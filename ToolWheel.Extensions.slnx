@@ -24,6 +24,9 @@
     <Project Path="Source/extensions/JobManager/ToolWheel.Extensions.JobManager.Scheduler/test/ToolWheel.Extensions.JobManager.Scheduler.Test/ToolWheel.Extensions.JobManager.Scheduler.Test.csproj" />
   </Folder>
   <Folder Name="/Source/extensions/JobManager/ToolWheel.Extensions.JobManager/" />
+  <Folder Name="/Source/extensions/JobManager/ToolWheel.Extensions.JobManager/integration/">
+    <Project Path="Source/extensions/JobManager/ToolWheel.Extensions.JobManager/integration/ToolWheel.Extensions.JobManager.Integration.csproj" />
+  </Folder>
   <Folder Name="/Source/extensions/JobManager/ToolWheel.Extensions.JobManager/src/">
     <Project Path="Source/extensions/JobManager/ToolWheel.Extensions.JobManager/src/ToolWheel.Extensions.JobManager.csproj" />
   </Folder>
