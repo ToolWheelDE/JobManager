@@ -9,7 +9,9 @@ public interface IJobDescription : IEquatable<JobDescription>
 {
     string JobId { get; init; }
 
-    MethodInfo Target { get; init; }
+    MethodInfo Method { get; init; }
+
+    object? Target { get; init; }
 
     IConfiguration? Configuration { get; init; }
 

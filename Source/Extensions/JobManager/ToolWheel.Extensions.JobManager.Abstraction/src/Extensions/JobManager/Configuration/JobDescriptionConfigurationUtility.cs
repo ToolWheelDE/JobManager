@@ -8,9 +8,9 @@ namespace ToolWheel.Extensions.JobManager.Configuration;
 
 public class JobDescriptionConfigurationUtility
 {
-    public static JobDescription CreateJobDescription(MethodInfo target, Action<JobDescriptionBuilder>? configure = null, Func<JobDescriptionIdInfo, string>? jobIdResolver = null)
+    public static JobDescription CreateJobDescription(MethodInfo method, object? target, Action<JobDescriptionBuilder>? configure = null, Func<JobDescriptionIdInfo, string>? jobIdResolver = null)
     {
-        var builder = new JobDescriptionBuilder(target);
+        var builder = new JobDescriptionBuilder(method, target);
         configure?.Invoke(builder);
 
         Apply(builder, jobIdResolver);

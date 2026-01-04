@@ -23,7 +23,7 @@ public static class JobDescriptorCollectionExtensions
 
         foreach (var method in methods)
         {
-            collection.AddMethod(method);
+            collection.AddMethod(method, null);
         }
 
         return collection;
@@ -38,16 +38,16 @@ public static class JobDescriptorCollectionExtensions
 
     public static void AddMethod(this JobDescriptionCollection collection, Delegate method, Action<JobDescriptionBuilder>? configure = null)
     {
-        AddMethod(collection, method.Method, configure);
+        AddMethod(collection, method.Method, method.Target, configure);
     }
 
-    public static void AddMethod(this JobDescriptionCollection collection, MethodInfo target, Action<JobDescriptionBuilder>? configure = null)
+    public static void AddMethod(this JobDescriptionCollection collection, MethodInfo method, object? target, Action<JobDescriptionBuilder>? configure = null)
     {
         if (collection == null) throw new ArgumentNullException(nameof(collection));
-        if (target == null) throw new ArgumentNullException(nameof(target));
+        if (method == null) throw new ArgumentNullException(nameof(method));
 
-        var builder = new JobDescriptionBuilder(target);
-        var jobDescription = JobDescriptionConfigurationUtility.CreateJobDescription(target, configure, m => JobIdResolver(collection, m));
+        var builder = new JobDescriptionBuilder(method, target);
+        var jobDescription = JobDescriptionConfigurationUtility.CreateJobDescription(method, target, configure, m => JobIdResolver(collection, m));
 
         collection.Add(jobDescription);
     }
@@ -60,7 +60,7 @@ public static class JobDescriptorCollectionExtensions
         }
         else
         {
-            var count = collection.Count(m => m.Target == info.Target);
+            var count = collection.Count(m => m.Method == info.Target);
 
             return count == 0 ? MethodFullname(info.Target) : $"{MethodFullname(info.Target)}_{count}";
         }

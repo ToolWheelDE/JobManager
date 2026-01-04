@@ -38,7 +38,8 @@ public class JobService : IJobService
 
         var job = new Job(jobDescription.JobId)
         {
-            Method = jobDescription.Target,
+            Method = jobDescription.Method,
+            Target = jobDescription.Target,
             Name = jobDescription.JobName,
             IsScopedInstance = jobDescription.IsScoped,
             Configuration = jobDescription?.Configuration,
@@ -64,13 +65,6 @@ public class JobService : IJobService
         _logger?.LogInformation("Job with Id '{JobId}' and method '{JobMethod}' registered successfully.", job.Id, job.Method);
 
         return job;
-    }
-
-    public IJob? Add(MethodInfo method, Action<JobDescriptionBuilder>? configure = null)
-    {
-        var jobDescription = JobDescriptionConfigurationUtility.CreateJobDescription(method, configure, JobIdResolver);
-
-        return Add(jobDescription);
     }
 
     public IJob? Find(string jobId)

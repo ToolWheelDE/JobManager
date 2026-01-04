@@ -12,6 +12,8 @@ public interface IJob
 
     MethodInfo Method { get; init; }
 
+    object? Target { get; init; }
+
     bool IsScopedInstance { get; init; }
 
     JobStatus Status { get; }

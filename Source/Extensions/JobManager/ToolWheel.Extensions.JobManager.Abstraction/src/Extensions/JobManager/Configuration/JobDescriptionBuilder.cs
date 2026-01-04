@@ -8,8 +8,9 @@ namespace ToolWheel.Extensions.JobManager.Configuration;
 
 public class JobDescriptionBuilder
 {
-    private readonly MethodInfo _target;
-    private string? _id;
+    private readonly MethodInfo _methodInfo;
+    private object? _target;
+    private string _id;
     private string? _name;
     private int? _maxExecutedTasks;
     private bool? _isScoped;
@@ -18,10 +19,11 @@ public class JobDescriptionBuilder
     private readonly HashSet<string> _jobGroupIds = new HashSet<string>();
     private readonly HashSet<IFeature> _features = new HashSet<IFeature>();
 
-    public JobDescriptionBuilder(MethodInfo target, string? id = null)
+    public JobDescriptionBuilder(MethodInfo methodInfo, object? target, string? id = null)
     {
-        _target = target;
-        _id = id;
+        _methodInfo = methodInfo;
+        _target=target;
+        _id = id ?? Guid.NewGuid().ToString ();
     }
 
     public JobDescription Build()
@@ -33,8 +35,9 @@ public class JobDescriptionBuilder
 
         return new JobDescription(_id)
         {
+            Method = _methodInfo,
             Target = _target,
-            JobName = _name ?? _target.Name,
+            JobName = _name ?? _methodInfo.Name,
             MaxExecutedJobs = _maxExecutedTasks ?? 0,
             IsScoped = _isScoped ?? true,
             Enabled = _enabled ?? true,
@@ -48,7 +51,7 @@ public class JobDescriptionBuilder
     {
         return new JobDescriptionIdInfo
         {
-            Target = _target,
+            Target = _methodInfo,
             Id = _id!
         };
     }

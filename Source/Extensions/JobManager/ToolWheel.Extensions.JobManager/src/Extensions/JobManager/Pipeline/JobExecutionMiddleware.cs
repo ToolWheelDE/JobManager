@@ -87,8 +87,20 @@ public class JobExecutionMiddleware : IExecutionMiddlewareAsync
         }
     }
 
-    private object CreateInstance(IJobTaskContextBuilder jobTaskContext, CancellationToken cancellationToken)
+    private object? CreateInstance(IJobTaskContextBuilder jobTaskContext, CancellationToken cancellationToken)
     {
+        // Für statische Methoden wird keine Instanz benötigt
+        if (jobTaskContext.JobTask.Job.Method.IsStatic)
+        {
+            return null;
+        }
+
+        // Wenn ein Target angegeben ist, verwende diesen. Weil die Instanz eingegenem wird oder ein Closure ist.
+        if (jobTaskContext.JobTask.Job.Target is not null)
+        {
+            return jobTaskContext.JobTask.Job.Target;
+        }
+
         if (jobTaskContext.JobTask.Job.IsScopedInstance)
         {
             var constructors = jobTaskContext.JobTask.Job.Method.DeclaringType!.GetConstructors();

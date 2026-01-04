@@ -8,7 +8,9 @@ namespace ToolWheel.Extensions.JobManager.Configuration;
 
 public record JobDescription(string JobId) : IJobDescription
 {
-    public required MethodInfo Target { get; init; }
+    public required MethodInfo Method { get; init; }
+
+    public required object? Target { get; init; }
 
     public IConfiguration? Configuration { get; init; } = null;
 
