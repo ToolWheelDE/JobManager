@@ -21,7 +21,7 @@ public class JobService : IJobService
     private readonly IConfiguration? _configuration;
     private readonly List<Job> _jobs = new List<Job>();
 
-    public JobService(ILogger<JobService>? logger, IConfiguration? configuration, IServiceProvider serviceProvider)
+    public JobService(IServiceProvider serviceProvider, ILogger<JobService>? logger = null, IConfiguration? configuration = null)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
@@ -41,7 +41,7 @@ public class JobService : IJobService
             Method = jobDescription.Target,
             Name = jobDescription.JobName,
             IsScopedInstance = jobDescription.IsScoped,
-            Configuration = jobDescription?.Configuration ,
+            Configuration = jobDescription?.Configuration,
             MaxExecutedTasks = jobDescription.MaxExecutedJobs,
             Enabled = jobDescription.Enabled,
             JobDependencyIds = jobDescription?.JobDependencyIds?.ToList() ?? new List<string>()

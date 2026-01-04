@@ -9,9 +9,9 @@
 
 //public class JobExceptionHandlerMiddleware : IExecutionMiddlewareAsync
 //{
-//    private readonly ILogger<JobExceptionHandlerMiddleware> _logger;
+//    private readonly ILogger<JobExceptionHandlerMiddleware>? _logger;
 
-//    public JobExceptionHandlerMiddleware(ILogger<JobExceptionHandlerMiddleware> logger)
+//    public JobExceptionHandlerMiddleware(ILogger<JobExceptionHandlerMiddleware>? logger = null)
 //    {
 //        _logger = logger;
 //    }

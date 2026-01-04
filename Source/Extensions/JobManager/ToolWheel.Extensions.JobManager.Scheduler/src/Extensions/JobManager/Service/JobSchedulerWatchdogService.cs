@@ -13,7 +13,7 @@ public class JobSchedulerWatchdogService : BackgroundService
     private readonly HealthCheckService _healthCheckService;
     private readonly IHostApplicationLifetime _lifetime;
 
-    public JobSchedulerWatchdogService(ILogger<JobSchedulerWatchdogService>? logger, HealthCheckService healthCheckService, IHostApplicationLifetime lifetime)
+    public JobSchedulerWatchdogService(HealthCheckService healthCheckService, IHostApplicationLifetime lifetime, ILogger<JobSchedulerWatchdogService>? logger = null)
     {
         _logger = logger;
         _healthCheckService = healthCheckService;

@@ -13,7 +13,7 @@ public class JobGroupService : IJobGroupService
 
     private readonly ILogger<JobGroupService>? _logger;
 
-    public JobGroupService(ILogger<JobGroupService>? logger)
+    public JobGroupService(ILogger<JobGroupService>? logger = null)
     {
         _logger = logger;
     }

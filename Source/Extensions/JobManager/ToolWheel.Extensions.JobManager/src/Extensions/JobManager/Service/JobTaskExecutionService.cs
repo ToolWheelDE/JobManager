@@ -17,7 +17,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
     private readonly ILogger<JobTaskExecutionService>? _logger;
     private readonly IJobService _jobService;
 
-    public JobTaskExecutionService(IServiceScopeFactory serviceScopeFactory, ILogger<JobTaskExecutionService>? logger, IJobService jobService)
+    public JobTaskExecutionService(IServiceScopeFactory serviceScopeFactory, IJobService jobService, ILogger<JobTaskExecutionService>? logger = null)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
