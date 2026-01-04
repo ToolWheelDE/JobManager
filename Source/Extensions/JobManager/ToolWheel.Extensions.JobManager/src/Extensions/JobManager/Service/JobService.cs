@@ -16,12 +16,12 @@ namespace ToolWheel.Extensions.JobManager.Service;
 
 public class JobService : IJobService
 {
-    private readonly ILogger<JobService> _logger;
+    private readonly ILogger<JobService>? _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration? _configuration;
     private readonly List<Job> _jobs = new List<Job>();
 
-    public JobService(ILogger<JobService> logger, IServiceProvider serviceProvider, IConfiguration configuration)
+    public JobService(ILogger<JobService>? logger, IConfiguration? configuration, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
@@ -32,7 +32,7 @@ public class JobService : IJobService
     {
         if (Find(jobDescription.JobId) is not null)
         {
-            _logger.LogWarning("Job with Id '{JobId}' already exists. Skipping registration.", jobDescription.JobId);
+            _logger?.LogWarning("Job with Id '{JobId}' already exists. Skipping registration.", jobDescription.JobId);
             return null;
         }
 
@@ -41,7 +41,7 @@ public class JobService : IJobService
             Method = jobDescription.Target,
             Name = jobDescription.JobName,
             IsScopedInstance = jobDescription.IsScoped,
-            Configuration = jobDescription.Configuration ,
+            Configuration = jobDescription?.Configuration ,
             MaxExecutedTasks = jobDescription.MaxExecutedJobs,
             Enabled = jobDescription.Enabled,
             JobDependencyIds = jobDescription?.JobDependencyIds?.ToList() ?? new List<string>()
@@ -61,7 +61,7 @@ public class JobService : IJobService
 
         CheckCircularJobDependency();
 
-        _logger.LogInformation("Job with Id '{JobId}' and method '{JobMethod}' registered successfully.", job.Id, job.Method);
+        _logger?.LogInformation("Job with Id '{JobId}' and method '{JobMethod}' registered successfully.", job.Id, job.Method);
 
         return job;
     }
@@ -137,7 +137,7 @@ public class JobService : IJobService
 
         foreach (var removableDependency in removableDependencies)
         {
-            _logger.LogWarning("Circular dependency detected between Job '{JobId}' and Job '{WaitForJobId}'.", removableDependency.Job.Id, removableDependency.WaitForJobId);
+            _logger?.LogWarning("Circular dependency detected between Job '{JobId}' and Job '{WaitForJobId}'.", removableDependency.Job.Id, removableDependency.WaitForJobId);
         }
     }
 

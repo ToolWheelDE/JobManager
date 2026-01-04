@@ -9,11 +9,11 @@ namespace ToolWheel.Extensions.JobManager.Service;
 
 public class JobSchedulerWatchdogService : BackgroundService
 {
-    private readonly ILogger<JobSchedulerWatchdogService> _logger;
+    private readonly ILogger<JobSchedulerWatchdogService>? _logger;
     private readonly HealthCheckService _healthCheckService;
     private readonly IHostApplicationLifetime _lifetime;
 
-    public JobSchedulerWatchdogService(ILogger<JobSchedulerWatchdogService> logger, HealthCheckService healthCheckService, IHostApplicationLifetime lifetime)
+    public JobSchedulerWatchdogService(ILogger<JobSchedulerWatchdogService>? logger, HealthCheckService healthCheckService, IHostApplicationLifetime lifetime)
     {
         _logger = logger;
         _healthCheckService = healthCheckService;
@@ -22,7 +22,7 @@ public class JobSchedulerWatchdogService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Monitoring JobScheduler health...");
+        _logger?.LogInformation("Monitoring JobScheduler health...");
 
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(2));
 
@@ -32,11 +32,11 @@ public class JobSchedulerWatchdogService : BackgroundService
 
             if (report.Status != HealthStatus.Healthy)
             {
-                _logger.LogError("JobScheduler unhealthy for too long. Stopping application to trigger restart.");
+                _logger?.LogError("JobScheduler unhealthy for too long. Stopping application to trigger restart.");
                 Environment.Exit(1); // ExitCode 1 indicates an error condition, which will trigger a restart in many hosting environments.
             }
         }
 
-        _logger.LogInformation("Job-Scheduler Watchdog stopped.");
+        _logger?.LogInformation("Job-Scheduler Watchdog stopped.");
     }
 }

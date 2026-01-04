@@ -8,9 +8,9 @@ namespace ToolWheel.Extensions.JobManager.Service;
 public class JobSchedulerService : IJobSchedulerService
 {
     private readonly Dictionary<IJob, JobScheduler> _scheduledJobs = new();
-    private readonly ILogger<JobSchedulerService> _logger;
+    private readonly ILogger<JobSchedulerService>? _logger;
 
-    public JobSchedulerService(ILogger<JobSchedulerService> logger)
+    public JobSchedulerService(ILogger<JobSchedulerService>? logger)
     {
         _logger = logger;
     }
@@ -31,7 +31,7 @@ public class JobSchedulerService : IJobSchedulerService
 
         _scheduledJobs[job] = jobScheduler;
 
-        _logger.LogInformation("Scheduled job {JobId} with {EntryCount} entries.", job.Id, jobSchedulerDescription.Entries.Count);
+        _logger?.LogInformation("Scheduled job {JobId} with {EntryCount} entries.", job.Id, jobSchedulerDescription.Entries.Count);
 
         return jobScheduler;
     }
