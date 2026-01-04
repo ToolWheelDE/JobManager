@@ -54,7 +54,7 @@ public class JobTaskService : IJobTaskService
     {
         var taskArray = _tasks
             .SelectMany(m => m.Value)
-            .Where(m => m is not null && m.Status == JobTaskStatus.Running)
+            .Where(m => m is not null && m.Status == JobTaskStatus.Running || m.Status == JobTaskStatus.Pending)
             .Select(m => m.ExecutionTask)
             .ToArray();
 

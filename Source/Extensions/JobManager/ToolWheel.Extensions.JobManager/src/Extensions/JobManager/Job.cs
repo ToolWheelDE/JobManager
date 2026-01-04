@@ -12,6 +12,8 @@ public record Job(string Id) : IJob, IEquatable<IJob>
 {
     public required MethodInfo Method { get; init; }
 
+    public required object? Target { get; init; }
+
     public required string Name { get; set; }
 
     public required bool IsScopedInstance { get; init; }

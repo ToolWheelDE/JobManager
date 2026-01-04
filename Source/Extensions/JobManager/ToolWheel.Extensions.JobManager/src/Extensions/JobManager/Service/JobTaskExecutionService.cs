@@ -52,7 +52,7 @@ public class JobTaskExecutionService : IJobTaskExecutionService
     private async Task UseProviderScopeAsync(JobTask jobTask, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        using var loggerScope = _logger.BeginScope(new { jobTask.Id, jobTask.Job });
+        using var loggerScope = _logger?.BeginScope(new { jobTask.Id, jobTask.Job }) ?? null;
         using var jobLoggerScope = jobTask.Job.Logger?.BeginScope(new { jobTask.Id, jobTask.Job });
 
         var provider = scope.ServiceProvider;

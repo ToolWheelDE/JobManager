@@ -9,8 +9,6 @@ public interface IJobService
 {
     IJob? Add(IJobDescription job);
 
-    IJob? Add(MethodInfo method, Action<JobDescriptionBuilder>? configure = null);
-
     IJob? Find(string jobId);
 
     IEnumerable<IJob> Read();
