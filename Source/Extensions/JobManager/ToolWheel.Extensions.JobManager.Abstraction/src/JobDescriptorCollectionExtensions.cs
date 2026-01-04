@@ -33,7 +33,7 @@ public static class JobDescriptorCollectionExtensions
     {
         var target = ResolveMethodCall(expr.Body) ?? throw new ArgumentException("Expression does not represent a method call.");
 
-        AddMethod(collection, target, configure);
+        AddMethod(collection, target, null, configure);
     }
 
     public static void AddMethod(this JobDescriptionCollection collection, Delegate method, Action<JobDescriptionBuilder>? configure = null)
