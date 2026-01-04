@@ -42,7 +42,7 @@ public class JobService : IJobService
             Target = jobDescription.Target,
             Name = jobDescription.JobName,
             IsScopedInstance = jobDescription.IsScoped,
-            Configuration = jobDescription?.Configuration,
+            Configuration = jobDescription.Configuration ?? null,
             MaxExecutedTasks = jobDescription.MaxExecutedJobs,
             Enabled = jobDescription.Enabled,
             JobDependencyIds = jobDescription?.JobDependencyIds?.ToList() ?? new List<string>()

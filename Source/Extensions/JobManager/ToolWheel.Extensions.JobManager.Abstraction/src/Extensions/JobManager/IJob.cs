@@ -20,7 +20,7 @@ public interface IJob
 
     bool Enabled { get; set; }
 
-    IConfiguration Configuration { get; init; }
+    IConfiguration? Configuration { get; init; }
 
     string Name { get; set; }
 

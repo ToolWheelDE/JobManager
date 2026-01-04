@@ -23,7 +23,7 @@ public interface IJobDescription : IEquatable<JobDescription>
 
     bool Enabled { get; init; }
 
-    IEnumerable<string>? JobDependencyIds { get; init; }
+    IEnumerable<string> JobDependencyIds { get; init; }
 
     IEnumerable<string> Groups { get; init; }
 
