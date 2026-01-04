@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using ToolWheel.Extensions.JobManager;
 using ToolWheel.Extensions.JobManager.Configuration;

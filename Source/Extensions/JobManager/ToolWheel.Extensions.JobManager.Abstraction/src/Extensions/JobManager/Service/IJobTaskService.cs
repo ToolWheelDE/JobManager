@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ToolWheel.Extensions.JobManager;
+using System.Collections.Generic;
 
 namespace ToolWheel.Extensions.JobManager.Service;
 

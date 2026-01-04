@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ToolWheel.Extensions.JobManager;
+using System.Linq;
 using ToolWheel.Extensions.JobManager.Service;
 
 namespace ToolWheel.Extensions.JobManager.Pipeline;

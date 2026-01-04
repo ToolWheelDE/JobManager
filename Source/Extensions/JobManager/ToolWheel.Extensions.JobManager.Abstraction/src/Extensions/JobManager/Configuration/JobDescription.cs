@@ -1,6 +1,4 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
@@ -12,7 +10,7 @@ public record JobDescription(string JobId) : IJobDescription
 
     public required object? Target { get; init; }
 
-    public IConfiguration? Configuration { get; init; } = null;
+    public IConfiguration? Configuration { get; init; }
 
     public required string JobName { get; init; }
 

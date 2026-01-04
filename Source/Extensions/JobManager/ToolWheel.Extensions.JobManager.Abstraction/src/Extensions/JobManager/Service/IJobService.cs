@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
 using ToolWheel.Extensions.JobManager.Configuration;
 
 namespace ToolWheel.Extensions.JobManager.Service;

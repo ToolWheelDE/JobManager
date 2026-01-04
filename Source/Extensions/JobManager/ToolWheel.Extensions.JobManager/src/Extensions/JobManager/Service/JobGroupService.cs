@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using ToolWheel.Extensions.JobManager;
 using ToolWheel.Extensions.JobManager.Configuration;
 
 namespace ToolWheel.Extensions.JobManager.Service;

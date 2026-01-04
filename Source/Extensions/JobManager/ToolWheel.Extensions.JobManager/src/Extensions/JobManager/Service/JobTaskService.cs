@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ToolWheel.Extensions.JobManager;
 
 namespace ToolWheel.Extensions.JobManager.Service;
 
